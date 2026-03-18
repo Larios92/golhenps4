@@ -61,3 +61,28 @@ p {
     font-size: 0.9rem;
     font-weight: bold;
 }
+/* DISEÑO DEL QR DE SOPORTE - VIDEO JUEGOS TEL */
+.qr-soporte {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    text-align: center;
+    background: rgba(0, 0, 0, 0.7); /* Fondo semi-transparente para resaltar */
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid #222;
+}
+
+.qr-soporte img {
+    width: 100px; /* Tamaño del QR en pantalla */
+    height: 100px;
+    border: 2px solid #00d2ff; /* Borde cian neón */
+    border-radius: 5px;
+}
+
+.qr-soporte p {
+    color: #555;
+    font-size: 0.7rem;
+    margin-top: 5px;
+    font-weight: bold;
+}
