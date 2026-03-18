@@ -1,0 +1,12 @@
+CACHE MANIFEST
+# v1.1 - Video Juegos TEL Granada
+
+CACHE:
+index.html
+style.css
+main.js
+psfree.js
+logo.png
+
+NETWORK:
+*

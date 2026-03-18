@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="es" manifest="cache.appcache">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Juegos TEL - PS4 Host</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body onload="document.location.hash='loaded'">
+    <div class="container">
+        <img src="logo.png" alt="Video Juegos TEL Logo" class="logo">
+        <h1>Video Juegos TEL</h1>
+        <p>Soporte Profesional - Granada, Nicaragua</p>
+        
+        <div class="button-container">
+            <button onclick="loadPayload()" class="neon-button">CARGAR GOLDHEN V2.4</button>
+        </div>
+
+        <div id="status" class="status-text">Listo para cargar</div>
+    </div>
+
+    <script src="psfree.js"></script>
+    <script src="main.js"></script>
+</body>
+</html>
