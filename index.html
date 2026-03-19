@@ -6,25 +6,25 @@
     <title>Video Juegos TEL - PS4 Host</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body onload="document.location.hash='loaded'">
+<body>
     <div class="container">
         <img src="logo.png" alt="Video Juegos TEL Logo" class="logo">
         <h1>Video Juegos TEL</h1>
         <p>Soporte Profesional - Granada, Nicaragua</p>
         
         <div class="button-container">
-            <button onclick="loadPayload()" class="neon-button">CARGAR GOLDHEN V2.4</button>
+            <button onclick="loadPayload()" class="neon-button">ACTIVAR GOLDHEN 9.00</button>
         </div>
 
-        <div id="status" class="status-text">Listo para cargar</div>
+        <div id="status" class="status-text">Esperando inicio...</div>
     </div>
 
-<div class="qr-soporte">
+    <div class="qr-soporte">
         <img src="qr-contacto.png" alt="Soporte QR">
         <p>Soporte Técnico</p>
     </div>
     
-    <script src="psfree.js"></script>
+    <script type="module" src="bundle.js"></script>
     <script src="main.js"></script>
 </body>
 </html>
