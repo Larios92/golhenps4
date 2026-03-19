@@ -1,5 +1,5 @@
 CACHE MANIFEST
-# v1.3 - Video Juegos TEL Granada con QR
+# v1.4 - Video Juegos TEL
 
 CACHE:
 index.html
@@ -8,6 +8,7 @@ main.js
 psfree.js
 logo.png
 qr-contacto.png
+goldhen.bin
 
 NETWORK:
 *
