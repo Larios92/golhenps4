@@ -52,9 +52,33 @@ if (window.applicationCache) {
     };
 }
 
-// 4. Inyección del Payload (Formato binario para PS4)
-// Aquí es donde AI Studio puede ayudarte a pegar el código gigante del .bin
+// 4. Inyección del Payload (Conexión Real con goldhen.bin)
 function injectGoldhen() {
-    updateStatus("Inyectando GoldHEN v2.4...");
-    // El código de inyección real va aquí
+    updateStatus("Inyectando GoldHEN v2.4... Mira la esquina superior.");
+    
+    // 1. Buscamos el archivo real que subiste a tu GitHub
+    var xhr = new XMLHttpRequest();
+    xhr.open('GET', 'goldhen.bin', true); // Asegúrate que el archivo se llame así en GitHub
+    xhr.responseType = 'arraybuffer';
+    
+    xhr.onload = function(e) {
+        if (this.status == 200) {
+            // 2. Si el archivo carga, lo enviamos al motor de PSFree
+            // Nota: 'p_load' es la función estándar que usa PSFree para inyectar
+            if (typeof p_load === "function") {
+                p_load(this.response); 
+                updateStatus("✅ ¡Payload enviado con éxito!");
+            } else {
+                updateStatus("Error: No se encontró el motor de inyección.", true);
+            }
+        } else {
+            updateStatus("Error: No se encontró el archivo goldhen.bin en el servidor.", true);
+        }
+    };
+    
+    xhr.onerror = function() {
+        updateStatus("Error de red al intentar cargar el GoldHEN.", true);
+    };
+    
+    xhr.send();
 }
