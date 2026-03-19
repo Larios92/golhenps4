@@ -1,90 +1,76 @@
-// CONFIGURACIÓN DE VIDEO JUEGOS TEL
+// CONFIGURACIÓN VIDEO JUEGOS TEL - GRANADA
 const PAYLOAD_NAME = "GoldHEN v2.4b16";
 
-// 1. Funciones de Interfaz
 function updateStatus(msg, isError = false) {
     const statusDiv = document.getElementById("status");
     if (statusDiv) {
         statusDiv.innerHTML = msg;
-        if (isError) statusDiv.style.color = "#ff4444";
-        else statusDiv.style.color = "#00d2ff"; // Color cian neón
+        statusDiv.style.color = isError ? "#ff4444" : "#00d2ff";
     }
-    console.log("[VJ-TEL] " + msg);
 }
 
-// 2. Lógica del Botón Principal
+// 1. Iniciar el Proceso
 function loadPayload() {
-    updateStatus("Iniciando PSFree para " + PAYLOAD_NAME + "...");
-    
+    updateStatus("Iniciando PSFree... No toques nada.");
     const btn = document.querySelector('.neon-button');
-    if (btn) {
-        btn.style.opacity = "0.5";
-        btn.disabled = true;
-    }
+    if (btn) { btn.disabled = true; btn.style.opacity = "0.5"; }
 
     setTimeout(() => {
-        try {
-            updateStatus("Buscando vulnerabilidad en el navegador...");
+        if (typeof runPSFree === "function") {
+            runPSFree(); // Lanza el exploit base
+            updateStatus("Exploit OK. Preparando memoria (7s)...");
             
-            if (typeof runPSFree === "function") {
-                runPSFree(); // Lanza el motor del exploit
-                
-                updateStatus("Exploit listo. Preparando inyección...");
-                
-                // Esperamos 4 segundos para que la memoria se estabilice
-                setTimeout(() => {
-                    injectGoldhen(); 
-                }, 4000);
-
-            } else {
-                updateStatus("Error: psfree.js no cargado.", true);
-                if (btn) btn.disabled = false;
-            }
-        } catch (e) {
-            updateStatus("Error en el proceso: " + e.message, true);
-            if (btn) btn.disabled = false;
+            // DAMOS 7 SEGUNDOS PARA QUE LA PS4 ESTÉ LISTA
+            setTimeout(injectGoldhen, 7000);
+        } else {
+            updateStatus("Error: El motor psfree.js no cargó.", true);
         }
-    }, 1500);
+    }, 1000);
 }
 
-// 4. Inyección del Payload Real
+// 2. Función de Inyección Multi-Compatible
 function injectGoldhen() {
-    updateStatus("Inyectando GoldHEN v2.4... Mira la esquina superior.");
+    updateStatus("Enviando goldhen.bin... Revisa tu TV.");
     
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'goldhen.bin', true); // Nombre exacto de tu archivo
+    xhr.open('GET', 'goldhen.bin?v=' + Date.now(), true);
     xhr.responseType = 'arraybuffer';
     
-    xhr.onload = function(e) {
+    xhr.onload = function() {
         if (this.status == 200) {
-            // Intentamos las funciones de inyección más comunes
-            if (typeof p_load === "function") {
-                p_load(this.response);
-            } else if (window.postPayload) {
-                window.postPayload(this.response);
-            } else if (typeof PL_load === "function") {
-                PL_load(this.response);
+            const data = this.response;
+            try {
+                // INTENTO 1: Función estándar de PSFree
+                if (window.postPayload) {
+                    window.postPayload(data);
+                } 
+                // INTENTO 2: Función alternativa
+                else if (typeof p_load === "function") {
+                    p_load(data);
+                } 
+                // INTENTO 3: Función de versiones antiguas
+                else if (typeof PL_load === "function") {
+                    PL_load(data);
+                }
+                // INTENTO 4: Si nada funciona, forzamos la carga
+                else {
+                    updateStatus("Intentando carga forzada...", true);
+                    if(typeof window.loadPayload === "function") window.loadPayload(data);
+                }
+                
+                updateStatus("🚀 ¡Sistema Activado por Video Juegos TEL!");
+            } catch (e) {
+                updateStatus("Fallo en la inyección: " + e.message, true);
             }
-            updateStatus("✅ ¡Enviado! Espera la notificación en la PS4.");
         } else {
-            updateStatus("Error: No se encontró goldhen.bin (404)", true);
+            updateStatus("Error: No se encontró el archivo .bin (404)", true);
         }
     };
-    
-    xhr.onerror = function() {
-        updateStatus("Error de red al cargar el binario.", true);
-    };
-    
     xhr.send();
 }
 
-// 3. Control de Cache Offline (AppCache)
+// 3. Cache Offline
 if (window.applicationCache) {
-    window.applicationCache.oncached = function() {
-        updateStatus("✅ Host guardado. Ya puedes usarlo sin Internet.");
-    };
-    window.applicationCache.onupdateready = function() {
-        updateStatus("Actualización encontrada. Aplicando...");
-        window.location.reload();
-    };
+    window.applicationCache.oncached = () => updateStatus("✅ Host Guardado (Modo Offline Listo)");
+    window.applicationCache.onupdateready = () => window.location.reload();
 }
