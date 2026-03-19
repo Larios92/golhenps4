@@ -53,25 +53,28 @@ if (window.applicationCache) {
     };
 }
 
-// 4. Inyección del Payload Real
+// 4. Inyección del Payload Real para Video Juegos TEL
 function injectGoldhen() {
     updateStatus("Inyectando GoldHEN v2.4... Mira la esquina superior.");
     
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'goldhen.bin', true); // Asegúrate que el nombre sea igual en GitHub
+    // RECUERDA: En GitHub el archivo debe llamarse exactamente goldhen.bin
+    xhr.open('GET', 'goldhen.bin', true); 
     xhr.responseType = 'arraybuffer';
     
     xhr.onload = function(e) {
         if (this.status == 200) {
-            // El motor de PSFree suele usar esta función para enviar el binario
-            if (window.postPayload) {
-                window.postPayload(this.response);
-            } else if (typeof p_load === "function") {
+            // Intentamos con las 3 funciones más comunes de los motores PSFree
+            if (typeof p_load === "function") {
                 p_load(this.response);
+            } else if (window.postPayload) {
+                window.postPayload(this.response);
+            } else if (typeof PL_load === "function") {
+                PL_load(this.response);
             }
             updateStatus("✅ ¡Enviado! Espera la notificación en la PS4.");
         } else {
-            updateStatus("Error: No se encontró el archivo .bin", true);
+            updateStatus("Error: No se encontró goldhen.bin en el servidor.", true);
         }
     };
     xhr.send();
