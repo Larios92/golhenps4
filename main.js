@@ -13,30 +13,31 @@ function updateStatus(msg, isError = false) {
 function loadPayload() {
     updateStatus("Iniciando PSFree para " + PAYLOAD_NAME + "...");
     
-    // Desactivar botón para evitar doble clic
     const btn = document.querySelector('.neon-button');
     btn.style.opacity = "0.5";
     btn.disabled = true;
 
-    // Ejecutar la cadena del exploit
     setTimeout(() => {
         try {
-            updateStatus("Buscando vulnerabilidad en el navegador...");
-            /* Aquí se dispara la función de PSFree. 
-               Nota: Este archivo depende de que tengas 'psfree.js' 
-               en la misma carpeta para funcionar al 100%.
-            */
+            updateStatus("Buscando vulnerabilidad...");
             if (typeof runPSFree === "function") {
-                runPSFree();
+                runPSFree(); // Esto inicia el exploit
+                
+                // --- AGREGA ESTO AQUÍ ---
+                setTimeout(() => {
+                    injectGoldhen(); // Esto inicia la inyección del .bin
+                }, 5000); // Esperamos 5 segundos a que el exploit prepare la memoria
+                // -------------------------
+                
             } else {
-                // Simulación de carga para pruebas de diseño
-                updateStatus("Exploit enviado. Espera la notificación en la PS4.");
+                updateStatus("Error: psfree.js no cargado.", true);
             }
         } catch (e) {
-            updateStatus("Error en el exploit: " + e.message, true);
+            updateStatus("Error: " + e.message, true);
         }
     }, 1500);
 }
+
 
 // 3. Control de Cache Offline (AppCache)
 if (window.applicationCache) {
@@ -52,33 +53,26 @@ if (window.applicationCache) {
     };
 }
 
-// 4. Inyección del Payload (Conexión Real con goldhen.bin)
+// 4. Inyección del Payload Real
 function injectGoldhen() {
     updateStatus("Inyectando GoldHEN v2.4... Mira la esquina superior.");
     
-    // 1. Buscamos el archivo real que subiste a tu GitHub
     var xhr = new XMLHttpRequest();
-    xhr.open('GET', 'goldhen.bin', true); // Asegúrate que el archivo se llame así en GitHub
+    xhr.open('GET', 'goldhen.bin', true); // Asegúrate que el nombre sea igual en GitHub
     xhr.responseType = 'arraybuffer';
     
     xhr.onload = function(e) {
         if (this.status == 200) {
-            // 2. Si el archivo carga, lo enviamos al motor de PSFree
-            // Nota: 'p_load' es la función estándar que usa PSFree para inyectar
-            if (typeof p_load === "function") {
-                p_load(this.response); 
-                updateStatus("✅ ¡Payload enviado con éxito!");
-            } else {
-                updateStatus("Error: No se encontró el motor de inyección.", true);
+            // El motor de PSFree suele usar esta función para enviar el binario
+            if (window.postPayload) {
+                window.postPayload(this.response);
+            } else if (typeof p_load === "function") {
+                p_load(this.response);
             }
+            updateStatus("✅ ¡Enviado! Espera la notificación en la PS4.");
         } else {
-            updateStatus("Error: No se encontró el archivo goldhen.bin en el servidor.", true);
+            updateStatus("Error: No se encontró el archivo .bin", true);
         }
     };
-    
-    xhr.onerror = function() {
-        updateStatus("Error de red al intentar cargar el GoldHEN.", true);
-    };
-    
     xhr.send();
 }
