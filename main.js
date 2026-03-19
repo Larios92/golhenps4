@@ -1,4 +1,4 @@
-// VIDEO JUEGOS TEL - Lógica de conexión
+// CONFIGURACIÓN VIDEO JUEGOS TEL - GRANADA
 function updateStatus(msg, isError = false) {
     const statusDiv = document.getElementById("status");
     if (statusDiv) {
@@ -7,18 +7,25 @@ function updateStatus(msg, isError = false) {
     }
 }
 
+// Esta es la función que activa el botón
 async function loadPayload() {
-    updateStatus("Iniciando motor PSFree...");
+    updateStatus("Iniciando Exploit (PSFree + Lapse)...");
     
-    // Intentamos llamar a la función que está dentro del bundle.js
     try {
-        if (typeof runPSFree === "function") {
-            await runPSFree(); 
-            // El bundle.js se encarga de explotar y buscar el 900.bin
+        // Verificamos si la función del bundle existe
+        if (typeof window.doJBwithPSFreeLapseExploit === "function") {
+            
+            // TRUCO TÉCNICO: El bundle busca "payload.bin"
+            // Pero como tú tienes "goldhen.bin", vamos a avisarle al sistema.
+            // Si puedes, renombra tu goldhen.bin a payload.bin en GitHub.
+            
+            updateStatus("Ejecutando Jailbreak... No toques nada.");
+            await window.doJBwithPSFreeLapseExploit();
+            
         } else {
-            updateStatus("Error: El motor bundle.js no está listo.", true);
+            updateStatus("Error: El motor bundle.js no cargó correctamente.", true);
         }
     } catch (e) {
-        updateStatus("Fallo en ejecución: " + e.message, true);
+        updateStatus("Error crítico: " + e.message, true);
     }
 }
