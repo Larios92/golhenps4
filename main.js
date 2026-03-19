@@ -1,29 +1,37 @@
-// VIDEO JUEGOS TEL - CONTROLADOR 9.00
-function updateStatus(msg, isError = false) {
+// CONFIGURACIÓN VIDEO JUEGOS TEL - GRANADA
+// 1. Creamos la función que el bundle.js busca para imprimir mensajes
+window.log = function(message, color) {
     const statusDiv = document.getElementById("status");
     if (statusDiv) {
-        statusDiv.innerHTML = msg;
-        statusDiv.style.color = isError ? "#ff4444" : "#00d2ff";
+        // Si el mensaje viene con color, lo aplicamos, si no, usamos azul neón
+        statusDiv.style.color = color || "#00d2ff";
+        statusDiv.innerHTML = message.replace(/\n/g, "<br>"); // Cambia saltos de línea por HTML
     }
+    console.log("PS4 Log: " + message);
+};
+
+// 2. Mantenemos tu función de actualización manual por si acaso
+function updateStatus(msg, isError = false) {
+    window.log(msg, isError ? "#ff4444" : "#00d2ff");
 }
 
+// 3. Función principal del botón
 async function loadPayload() {
-    // 1. Verificamos si el motor cargó
     if (typeof window.doJBwithPSFreeLapseExploit !== "function") {
-        updateStatus("Error: bundle.js no detectado. Recarga la página.", true);
+        updateStatus("Error: El motor bundle.js no ha cargado.", true);
         return;
     }
 
     try {
-        updateStatus("Explotando Webkit... (Paso 1/3)");
+        // Limpiamos pantalla e iniciamos
+        updateStatus("Iniciando proceso... Por favor espera.");
         
-        // 2. Ejecutamos el Jailbreak
-        // Este comando buscará automáticamente 900.bin y luego payload.bin
+        // Llamamos al exploit. Ahora, cuando el exploit use window.log, 
+        // aparecerá en tu pantalla sin dar error.
         await window.doJBwithPSFreeLapseExploit();
         
-        // Nota: Los mensajes de éxito aparecerán automáticamente 
-        // según el código interno del bundle.js
     } catch (e) {
-        updateStatus("Error en el proceso: " + e.message, true);
+        // Si el error persiste, lo capturamos aquí
+        updateStatus("Error crítico: " + e.message, true);
     }
 }
