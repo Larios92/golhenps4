@@ -4,39 +4,40 @@ const PAYLOAD_NAME = "GoldHEN v2.4b16";
 // 1. Funciones de Interfaz
 function updateStatus(msg, isError = false) {
     const statusDiv = document.getElementById("status");
-    statusDiv.innerHTML = msg;
-    if (isError) statusDiv.style.color = "#ff4444";
+    if (statusDiv) {
+        statusDiv.innerHTML = msg;
+        if (isError) statusDiv.style.color = "#ff4444";
+        else statusDiv.style.color = "#00d2ff"; // Color cian neón
+    }
     console.log("[VJ-TEL] " + msg);
 }
 
-// 2. Lógica del Botón Principal - VIDEO JUEGOS TEL
+// 2. Lógica del Botón Principal
 function loadPayload() {
     updateStatus("Iniciando PSFree para " + PAYLOAD_NAME + "...");
     
-    // Desactivar botón para evitar errores por doble clic
     const btn = document.querySelector('.neon-button');
     if (btn) {
         btn.style.opacity = "0.5";
         btn.disabled = true;
     }
 
-    // Ejecutar la cadena del exploit con tiempo de espera
     setTimeout(() => {
         try {
             updateStatus("Buscando vulnerabilidad en el navegador...");
             
             if (typeof runPSFree === "function") {
-                // 1. Lanzamos el motor del exploit
-                runPSFree(); 
+                runPSFree(); // Lanza el motor del exploit
                 
-                // 2. Esperamos 4 segundos a que la memoria esté lista
                 updateStatus("Exploit listo. Preparando inyección...");
+                
+                // Esperamos 4 segundos para que la memoria se estabilice
                 setTimeout(() => {
-                    injectGoldhen(); // Llamamos a la función de la Sección 4
+                    injectGoldhen(); 
                 }, 4000);
 
             } else {
-                updateStatus("Error: No se encontró el motor psfree.js", true);
+                updateStatus("Error: psfree.js no cargado.", true);
                 if (btn) btn.disabled = false;
             }
         } catch (e) {
@@ -46,34 +47,17 @@ function loadPayload() {
     }, 1500);
 }
 
-
-
-// 3. Control de Cache Offline (AppCache)
-if (window.applicationCache) {
-    window.applicationCache.oncached = function() {
-        updateStatus("✅ Host guardado en la PS4. Ya puedes desconectar el Internet.");
-    };
-    window.applicationCache.onupdateready = function() {
-        updateStatus("Actualización encontrada. Aplicando cambios...");
-        window.location.reload();
-    };
-    window.applicationCache.onerror = function() {
-        console.log("Aviso: El cache ya está listo o hubo un salto de red.");
-    };
-}
-
-// 4. Inyección del Payload Real para Video Juegos TEL
+// 4. Inyección del Payload Real
 function injectGoldhen() {
     updateStatus("Inyectando GoldHEN v2.4... Mira la esquina superior.");
     
     var xhr = new XMLHttpRequest();
-    // RECUERDA: En GitHub el archivo debe llamarse exactamente goldhen.bin
-    xhr.open('GET', 'goldhen.bin', true); 
+    xhr.open('GET', 'goldhen.bin', true); // Nombre exacto de tu archivo
     xhr.responseType = 'arraybuffer';
     
     xhr.onload = function(e) {
         if (this.status == 200) {
-            // Intentamos con las 3 funciones más comunes de los motores PSFree
+            // Intentamos las funciones de inyección más comunes
             if (typeof p_load === "function") {
                 p_load(this.response);
             } else if (window.postPayload) {
@@ -83,8 +67,24 @@ function injectGoldhen() {
             }
             updateStatus("✅ ¡Enviado! Espera la notificación en la PS4.");
         } else {
-            updateStatus("Error: No se encontró goldhen.bin en el servidor.", true);
+            updateStatus("Error: No se encontró goldhen.bin (404)", true);
         }
     };
+    
+    xhr.onerror = function() {
+        updateStatus("Error de red al cargar el binario.", true);
+    };
+    
     xhr.send();
+}
+
+// 3. Control de Cache Offline (AppCache)
+if (window.applicationCache) {
+    window.applicationCache.oncached = function() {
+        updateStatus("✅ Host guardado. Ya puedes usarlo sin Internet.");
+    };
+    window.applicationCache.onupdateready = function() {
+        updateStatus("Actualización encontrada. Aplicando...");
+        window.location.reload();
+    };
 }
