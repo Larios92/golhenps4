@@ -1,37 +1,40 @@
-// CONFIGURACIÓN VIDEO JUEGOS TEL - GRANADA
-// 1. Creamos la función que el bundle.js busca para imprimir mensajes
-window.log = function(message, color) {
-    const statusDiv = document.getElementById("status");
-    if (statusDiv) {
-        // Si el mensaje viene con color, lo aplicamos, si no, usamos azul neón
-        statusDiv.style.color = color || "#00d2ff";
-        statusDiv.innerHTML = message.replace(/\n/g, "<br>"); // Cambia saltos de línea por HTML
-    }
-    console.log("PS4 Log: " + message);
-};
+// ==========================================
+// VIDEO JUEGOS TEL - CONTROLADOR DEFINITIVO
+// ==========================================
 
-// 2. Mantenemos tu función de actualización manual por si acaso
-function updateStatus(msg, isError = false) {
-    window.log(msg, isError ? "#ff4444" : "#00d2ff");
-}
+// 1. CREACIÓN DEL "MEGÁFONO" (Log Global)
+// Esto debe ejecutarse de inmediato para que el bundle.js lo encuentre
+(function() {
+    window.log = function(message, color) {
+        const statusDiv = document.getElementById("status");
+        if (statusDiv) {
+            // Aplicamos color (rojo para error, verde para éxito, azul para info)
+            if (color === "red") statusDiv.style.color = "#ff4444";
+            else if (color === "green") statusDiv.style.color = "#00ff00";
+            else statusDiv.style.color = "#00d2ff";
 
-// 3. Función principal del botón
+            // Limpiamos el texto y lo mostramos
+            statusDiv.innerHTML = message.replace(/\n/g, "<br>");
+        }
+        console.log("PS4 Status: " + message);
+    };
+})();
+
+// 2. FUNCIÓN DE ACTIVACIÓN PARA EL BOTÓN
 async function loadPayload() {
+    // Verificamos si el motor cargó correctamente
     if (typeof window.doJBwithPSFreeLapseExploit !== "function") {
-        updateStatus("Error: El motor bundle.js no ha cargado.", true);
+        window.log("Error: El motor bundle.js aún no carga. \nEspera un momento o recarga la página.", "red");
         return;
     }
 
     try {
-        // Limpiamos pantalla e iniciamos
-        updateStatus("Iniciando proceso... Por favor espera.");
+        window.log("Iniciando Exploit... \nNo toques el control.", "#00d2ff");
         
-        // Llamamos al exploit. Ahora, cuando el exploit use window.log, 
-        // aparecerá en tu pantalla sin dar error.
+        // Llamada al motor PSFree + Lapse que está en tu bundle.js
         await window.doJBwithPSFreeLapseExploit();
         
     } catch (e) {
-        // Si el error persiste, lo capturamos aquí
-        updateStatus("Error crítico: " + e.message, true);
+        window.log("Fallo en el proceso: \n" + e.message, "red");
     }
 }
