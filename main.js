@@ -9,34 +9,43 @@ function updateStatus(msg, isError = false) {
     console.log("[VJ-TEL] " + msg);
 }
 
-// 2. Lógica del Botón Principal
+// 2. Lógica del Botón Principal - VIDEO JUEGOS TEL
 function loadPayload() {
     updateStatus("Iniciando PSFree para " + PAYLOAD_NAME + "...");
     
+    // Desactivar botón para evitar errores por doble clic
     const btn = document.querySelector('.neon-button');
-    btn.style.opacity = "0.5";
-    btn.disabled = true;
+    if (btn) {
+        btn.style.opacity = "0.5";
+        btn.disabled = true;
+    }
 
+    // Ejecutar la cadena del exploit con tiempo de espera
     setTimeout(() => {
         try {
-            updateStatus("Buscando vulnerabilidad...");
+            updateStatus("Buscando vulnerabilidad en el navegador...");
+            
             if (typeof runPSFree === "function") {
-                runPSFree(); // Esto inicia el exploit
+                // 1. Lanzamos el motor del exploit
+                runPSFree(); 
                 
-                // --- AGREGA ESTO AQUÍ ---
+                // 2. Esperamos 4 segundos a que la memoria esté lista
+                updateStatus("Exploit listo. Preparando inyección...");
                 setTimeout(() => {
-                    injectGoldhen(); // Esto inicia la inyección del .bin
-                }, 5000); // Esperamos 5 segundos a que el exploit prepare la memoria
-                // -------------------------
-                
+                    injectGoldhen(); // Llamamos a la función de la Sección 4
+                }, 4000);
+
             } else {
-                updateStatus("Error: psfree.js no cargado.", true);
+                updateStatus("Error: No se encontró el motor psfree.js", true);
+                if (btn) btn.disabled = false;
             }
         } catch (e) {
-            updateStatus("Error: " + e.message, true);
+            updateStatus("Error en el proceso: " + e.message, true);
+            if (btn) btn.disabled = false;
         }
     }, 1500);
 }
+
 
 
 // 3. Control de Cache Offline (AppCache)
