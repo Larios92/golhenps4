@@ -1,15 +1,15 @@
 CACHE MANIFEST
-# v1.5 - Video Juegos TEL Granada
+# v1.6 - Video Juegos TEL
 
 CACHE:
 index.html
 style.css
 main.js
 bundle.js
+900.bin
+payload.bin
 logo.png
 qr-contacto.png
-900.bin
-goldhen.bin
 
 NETWORK:
 *
